@@ -33,6 +33,10 @@ html { scroll-behavior: smooth; }
 
 [id] { scroll-margin-top: 92px; }
 
+/* Elements hidden via the `hidden` attribute must stay hidden even when a
+   class gives them a display value (grid, flex, inline-flex, …). */
+[hidden] { display: none !important; }
+
 [hidden] { display: none !important; }
 
 body {
@@ -780,6 +784,31 @@ textarea.field__input { resize: vertical; }
 .reviews { background: var(--white); }
 
 .reviews__stars { color: #f6b73c; font-size: 1.5rem; letter-spacing: 3px; }
+
+.reviews__cta {
+  max-width: 580px;
+  margin-inline: auto;
+  padding: 42px 36px 34px;
+  text-align: center;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  background: var(--cream);
+  box-shadow: none;
+}
+
+.reviews__cta h3 { font-size: 1.35rem; max-width: 26ch; }
+.reviews__cta > p { color: var(--muted); font-size: 0.95rem; }
+
+.reviews__cta-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.reviews__cta-fine { font-size: 0.8rem; color: #b0a893; }
 
 .reviews__grid {
   display: grid;

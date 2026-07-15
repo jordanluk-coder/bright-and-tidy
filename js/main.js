@@ -196,6 +196,18 @@ document.querySelectorAll(".js-mem-btn").forEach((btn) => {
   });
 });
 
+// ---------- Review button ----------
+// Hidden until a Google Business review link is pasted into data-review-link
+// in index.html (the "Review us on Google" button in the reviews section).
+const reviewBtn = document.querySelector(".js-review-btn");
+if (reviewBtn) {
+  if (reviewBtn.dataset.reviewLink) {
+    reviewBtn.href = reviewBtn.dataset.reviewLink;
+  } else {
+    reviewBtn.hidden = true;
+  }
+}
+
 // ---------- Square payment buttons ----------
 // Paste your Square payment links into the data-square-link attributes
 // in index.html (see README.md). Until then, buttons lead to the quote form.

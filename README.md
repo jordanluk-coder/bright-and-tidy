@@ -20,10 +20,14 @@ assets/           ← your logos
 *(Already done: phone number (951) 593-8266 and the brightandtidyco.com domain
 are wired into the contact links and SEO metadata.)*
 
-1. **Sample reviews** — the three reviews in the "What neighbors are saying"
-   section are **placeholders written to show the design**. Replace them with
-   real reviews from real customers before going live (each one is marked with
-   *"sample review — replace with a real one"* on the page so you can't miss them).
+1. **Reviews** — the reviews section currently shows a "please leave us a
+   review" invitation instead of reviews. Two things to do as they roll in:
+   - When you set up your **Google Business Profile**, copy your review link
+     (Profile → "Ask for reviews") and paste it into the `data-review-link=""`
+     attribute in `index.html` — the "Review us on Google" button will appear
+     automatically (it's hidden while the link is empty).
+   - Once you have 2–3 real customer reviews, they can be added back as cards
+     in this section (the styling for review cards is already in the CSS).
 
 2. **Prices** — pulled from your `Bright-and-Tidy-Pricing real.xlsx`
    (Price List tab) on 2026-07-14. The estimator mirrors the sheet's Quote
