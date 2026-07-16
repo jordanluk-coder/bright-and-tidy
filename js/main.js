@@ -52,11 +52,11 @@ siteNav.querySelectorAll(".nav__link").forEach((link) => {
 // Frequency multipliers apply to STANDARD cleans only, per the price list.
 const PRICING = {
   tiers: {
-    t1: { label: "1 bed / 1 bath", standard: 110, deep: 180, move: 320 },
-    t2: { label: "2 bed / 1–2 bath", standard: 135, deep: 230, move: 370 },
-    t3: { label: "3 bed / 2 bath", standard: 165, deep: 290, move: 430 },
-    t4: { label: "4 bed / 2–3 bath", standard: 195, deep: 360, move: 500 },
-    t5: { label: "5+ bed / 3+ bath", standard: 230, deep: 430, move: 570 },
+    t1: { label: "1 bed / 1 bath", standard: 132, deep: 180, move: 320 },
+    t2: { label: "2 bed / 1–2 bath", standard: 162, deep: 230, move: 370 },
+    t3: { label: "3 bed / 2 bath", standard: 198, deep: 290, move: 430 },
+    t4: { label: "4 bed / 2–3 bath", standard: 234, deep: 360, move: 500 },
+    t5: { label: "5+ bed / 3+ bath", standard: 276, deep: 430, move: 570 },
   },
   frequency: {
     weekly: { label: "Weekly", mult: 0.8 },
@@ -82,7 +82,7 @@ let lastEstimate = null;
 
 // Deep cleans and move in / move out packages already bundle most extras —
 // only genuinely additive add-ons stay selectable for those services.
-const EXTRA_ONLY_ADDONS = ["Dishes (1 sink load)", "Laundry (1 load)", "Extra pet hair"];
+const EXTRA_ONLY_ADDONS = ["Dishes (per load)", "Laundry (1 load)", "Extra pet hair"];
 
 function refreshAddonAvailability() {
   const bundled = estTypeSelect.value !== "standard";
