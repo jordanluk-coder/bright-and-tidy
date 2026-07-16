@@ -64,35 +64,21 @@ are wired into the contact links and SEO metadata.)*
 
 ---
 
-## 💳 Connecting Square payments (no developer account needed)
+## 💳 Square payments — configured ✅
 
-The three "Book…" buttons in the Pricing section are ready for **Square Payment
-Links**. You create these yourself in about 2 minutes — no code, and you never
-need to share your Square login with anyone:
+All three "Book…" buttons open the **$50 booking-deposit** Square checkout
+(`https://square.link/u/QOSsJGtU`), set via the `data-square-link` attribute on
+each button in `index.html`. The deposit reserves the clean; the balance is
+collected after the job (tap-to-pay or a Square invoice for the remainder).
 
-1. Sign in at [squareup.com](https://squareup.com) → open your **Dashboard**.
-2. Go to **Payments → Payment Links** (sometimes under *Online Checkout*).
-3. Click **Create a link** → choose **Collect a payment** or **Sell an item**.
-4. Name it (e.g. "The Deep Clean — deposit"), set the amount, and copy the link
-   (it looks like `https://square.link/u/AbCdEfGh`).
-5. In `index.html`, find the three buttons marked with this comment:
-   `<!-- Replace the href below with your Square payment link for this package -->`
-   and paste your link into the `data-square-link=""` attribute, e.g.:
-
-   ```html
-   <a href="#quote" class="btn btn--primary btn--block js-square-btn"
-      data-square-link="https://square.link/u/AbCdEfGh">Book The Deep Clean</a>
-   ```
-
-   That's it — the button will now open Square's secure checkout. Until a link
-   is added, the buttons simply scroll to the quote form (nothing breaks).
-
-**Tip:** many cleaning companies take a small booking deposit online and collect
-the balance after the clean — payment links work great for that.
-
-**Optional upgrade:** [Square Appointments](https://squareup.com/us/en/appointments)
-gives you a full self-serve booking calendar. It has a free plan and provides an
-embeddable booking widget / link you could add as a "Book online" button later.
+- **To change the amount:** edit the payment link in Square Dashboard →
+  Payments → Payment Links (the site needs no change), and update the "$50"
+  wording in the pricing footnote and FAQ in `index.html`.
+- **Memberships:** use Square **recurring invoices** (Dashboard → Invoices →
+  Recurring) — set each member up once and Square auto-bills monthly.
+- **Optional upgrade:** [Square Appointments](https://squareup.com/us/en/appointments)
+  gives you a full self-serve booking calendar with prepayment if you outgrow
+  the deposit flow.
 
 > 🔐 **Security note:** never share your Square password with anyone — no
 > legitimate service or developer needs it. Since it was shared in chat while
