@@ -64,21 +64,25 @@ are wired into the contact links and SEO metadata.)*
 
 ---
 
-## 💳 Square payments — configured ✅
+## 💳 Square — fully configured ✅
 
-All three "Book…" buttons open the **$50 booking-deposit** Square checkout
-(`https://square.link/u/QOSsJGtU`), set via the `data-square-link` attribute on
-each button in `index.html`. The deposit reserves the clean; the balance is
-collected after the job (tap-to-pay or a Square invoice for the remainder).
+**Online booking (primary):** the header "Book Online" button and all three
+pricing "Book…" buttons open the Square Appointments booking page
+(`https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start`,
+set via `data-square-link` in `index.html`). Customers pick the service, home
+size, and an open time slot; Square collects a **$50 deposit** and saves their
+card on file. Configured in Square: three services × five home-size variations
+(prices mirror the Price List), 1-day cancellation cutoff with the policy text,
+deposit rule on all services, card on file, and client self-rescheduling.
 
-- **To change the amount:** edit the payment link in Square Dashboard →
-  Payments → Payment Links (the site needs no change), and update the "$50"
-  wording in the pricing footnote and FAQ in `index.html`.
+- **Charging the balance after a clean:** open the appointment in the Square
+  app → charge the remainder to the card on file (one tap).
+- **Blocking days off:** Square app → Calendar → add a Personal Event or edit
+  your hours — blocked time never shows to customers.
+- **The old $50 payment link** (`https://square.link/u/QOSsJGtU`) still works —
+  handy for text-to-pay when someone books by phone instead.
 - **Memberships:** use Square **recurring invoices** (Dashboard → Invoices →
   Recurring) — set each member up once and Square auto-bills monthly.
-- **Optional upgrade:** [Square Appointments](https://squareup.com/us/en/appointments)
-  gives you a full self-serve booking calendar with prepayment if you outgrow
-  the deposit flow.
 
 > 🔐 **Security note:** never share your Square password with anyone — no
 > legitimate service or developer needs it. Since it was shared in chat while
