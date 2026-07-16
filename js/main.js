@@ -3,12 +3,12 @@
    ========================================================= */
 
 /* ---------- Config ----------
-   FORM_BACKEND_URL: paste your Formspree endpoint here (see README.md,
-   "Making the forms deliver to your inbox") and the quote form + call-back
-   requests will be emailed to you automatically, no email app needed.
-   Example: const FORM_BACKEND_URL = "https://formspree.io/f/abcdwxyz";
-   While it's empty, forms fall back to opening the visitor's email app. */
-const FORM_BACKEND_URL = "";
+   FORM_BACKEND_URL: form-delivery endpoint (FormSubmit AJAX). Quote-form and
+   call-back submissions are emailed to the address in this URL — no email
+   app needed. After activating FormSubmit, you can replace the address with
+   the random alias from your activation email to hide it from bots.
+   If ever set to "", forms fall back to opening the visitor's email app. */
+const FORM_BACKEND_URL = "https://formsubmit.co/ajax/jordan.luk@brightandtidyco.com";
 const BUSINESS_EMAIL = "info@brightandtidyco.com";
 
 // Sends form fields to the backend if configured; returns false otherwise
@@ -18,9 +18,13 @@ async function sendToBackend(fields) {
   const res = await fetch(FORM_BACKEND_URL, {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: JSON.stringify(fields),
+    body: JSON.stringify({ _template: "table", ...fields }),
   });
   if (!res.ok) throw new Error(`Form backend responded ${res.status}`);
+  const data = await res.json().catch(() => ({}));
+  if (data.success === "false" || data.ok === false) {
+    throw new Error("Form backend rejected the submission");
+  }
   return true;
 }
 

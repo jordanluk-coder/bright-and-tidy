@@ -106,23 +106,19 @@ The site has two lead forms: the **"20% off" quote form** and the **"Get a call
 back" pop-up** (hero button — visitors leave their number for you to call or
 text back from your business line).
 
-Out of the box, both open the visitor's email app pre-filled (works everywhere,
-zero setup). **Strongly recommended:** upgrade them to submit silently straight
-to your inbox — it takes 5 minutes and one pasted line:
+Both are wired to **FormSubmit** (free, no account) via the `FORM_BACKEND_URL`
+line at the top of `js/main.js` — submissions are emailed to the address in
+that URL, labeled "quote" or "call-back", and visitors see a success message
+on the page.
 
-1. Create a free account at [formspree.io](https://formspree.io) (free plan:
-   50 submissions/month).
-2. Click **New form**, name it "Bright & Tidy website", and copy the endpoint
-   URL it gives you (looks like `https://formspree.io/f/abcdwxyz`).
-3. Open `js/main.js` and paste it into the line at the very top:
+**One-time activation:** the first submission triggers a confirmation email
+from FormSubmit to that address — click **Activate** in it and delivery is on.
+The activation email also contains a **random alias string**; replacing the
+plain email address in `FORM_BACKEND_URL` with that alias hides the address
+from bots reading the page source (recommended).
 
-   ```js
-   const FORM_BACKEND_URL = "https://formspree.io/f/abcdwxyz";
-   ```
-
-That's it — both forms now email you every submission (each one is labeled
-"quote" or "call-back" with the visitor's phone number), and visitors see a
-success message instead of an email app opening.
+If `FORM_BACKEND_URL` is ever set to `""`, both forms fall back to opening the
+visitor's email app pre-filled via `mailto:`.
 
 ---
 
