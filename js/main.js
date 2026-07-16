@@ -8,7 +8,7 @@
    app needed. After activating FormSubmit, you can replace the address with
    the random alias from your activation email to hide it from bots.
    If ever set to "", forms fall back to opening the visitor's email app. */
-const FORM_BACKEND_URL = "https://formsubmit.co/ajax/jordanluk14@gmail.com";
+const FORM_BACKEND_URL = "https://formsubmit.co/ajax/jordan.luk@brightandtidyco.com";
 const BUSINESS_EMAIL = "info@brightandtidyco.com";
 
 // Sends form fields to the backend if configured; returns false otherwise
