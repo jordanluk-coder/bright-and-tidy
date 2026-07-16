@@ -240,23 +240,29 @@ quoteForm.addEventListener("submit", async (event) => {
   const service = document.getElementById("q-service").value;
   const msg = document.getElementById("q-msg").value.trim();
 
-  if (!name || !phone || !email) {
-    quoteStatus.textContent = "Please fill in your name, phone, and email so we can reach you.";
+  if (!name || phone.replace(/\D/g, "").length < 10) {
+    quoteStatus.textContent = "Please fill in your name and a full phone number so we can text your quote.";
     quoteStatus.className = "offer__fine is-error";
     return;
   }
 
   const subject = `20% off quote request — ${name} (${city})`;
 
+  const fields = {
+    _subject: subject,
+    name, phone, city, service,
+    email: email || "(not given — text them)",
+    notes: msg || "(none)",
+    form: "quote",
+  };
+  // Customers only get the automatic confirmation email if they left an address
+  if (email) {
+    fields._autoresponse =
+      "Thanks for requesting your Bright & Tidy quote! We've received your details and will text your exact quote shortly — usually within a couple of hours during business hours. — Bright & Tidy Home Cleaning · (951) 593-8266 · brightandtidyco.com";
+  }
+
   try {
-    const sent = await sendToBackend({
-      _subject: subject,
-      _autoresponse:
-        "Thanks for requesting your Bright & Tidy quote! We've received your details and will text or email your exact quote shortly — usually within a couple of hours during business hours. — Bright & Tidy Home Cleaning · (951) 593-8266 · brightandtidyco.com",
-      name, phone, email, city, service,
-      notes: msg || "(none)",
-      form: "quote",
-    });
+    const sent = await sendToBackend(fields);
     if (sent) {
       quoteForm.reset();
       quoteStatus.textContent = "Request sent! We'll text or email your quote shortly. 🎉";
@@ -273,7 +279,7 @@ quoteForm.addEventListener("submit", async (event) => {
   const body = [
     `Name: ${name}`,
     `Phone: ${phone}`,
-    `Email: ${email}`,
+    email ? `Email: ${email}` : null,
     `City: ${city}`,
     `Service: ${service}`,
     msg ? `Notes: ${msg}` : null,
