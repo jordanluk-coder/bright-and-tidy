@@ -993,6 +993,28 @@ textarea.field__input { resize: vertical; }
   font-size: 0.95rem;
 }
 
+/* ---------- refund & cancellation policy ---------- */
+.policy { padding-top: 0; }
+
+.policy__inner { max-width: 760px; }
+
+.policy__card {
+  padding: 36px 34px;
+  display: grid;
+  gap: 8px;
+}
+
+.policy__card h3 {
+  color: var(--blue);
+  font-size: 1.02rem;
+  margin-top: 14px;
+}
+.policy__card h3:first-child { margin-top: 0; }
+
+.policy__card p { color: var(--muted); font-size: 0.95rem; }
+
+.faq__item p a { color: var(--blue); font-weight: 600; }
+
 /* ---------- call-back modal ---------- */
 .callback {
   border: 0;
