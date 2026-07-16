@@ -251,6 +251,8 @@ quoteForm.addEventListener("submit", async (event) => {
   try {
     const sent = await sendToBackend({
       _subject: subject,
+      _autoresponse:
+        "Thanks for requesting your Bright & Tidy quote! We've received your details and will text or email your exact quote shortly — usually within a couple of hours during business hours. — Bright & Tidy Home Cleaning · (951) 593-8266 · brightandtidyco.com",
       name, phone, email, city, service,
       notes: msg || "(none)",
       form: "quote",
