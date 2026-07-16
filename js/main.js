@@ -265,7 +265,8 @@ quoteForm.addEventListener("submit", async (event) => {
     const sent = await sendToBackend(fields);
     if (sent) {
       quoteForm.reset();
-      quoteStatus.textContent = "Request sent! We'll text your quote shortly. 🎉";
+      quoteStatus.textContent =
+        "Request sent! 🎉 Watch for a text from (951) 593-8266 with your exact quote — usually within a couple of hours.";
       quoteStatus.className = "offer__fine is-success";
       return;
     }
@@ -336,7 +337,8 @@ document.getElementById("callback-form").addEventListener("submit", async (event
     });
     if (sent) {
       document.getElementById("callback-form").reset();
-      cbStatus.textContent = "Got it! We'll call or text you back shortly. 📞";
+      cbStatus.textContent =
+        "Got it! 📞 We'll call or text you back from (951) 593-8266 — save the number so you know it's us.";
       cbStatus.className = "callback__status is-success";
       return;
     }
