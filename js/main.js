@@ -265,7 +265,7 @@ quoteForm.addEventListener("submit", async (event) => {
     const sent = await sendToBackend(fields);
     if (sent) {
       quoteForm.reset();
-      quoteStatus.textContent = "Request sent! We'll text or email your quote shortly. 🎉";
+      quoteStatus.textContent = "Request sent! We'll text your quote shortly. 🎉";
       quoteStatus.className = "offer__fine is-success";
       return;
     }
