@@ -137,29 +137,8 @@ estimatorForm.addEventListener("submit", (event) => {
   lastEstimate = { tierLabel: tier.label, typeLabel: PRICING.typeLabels[type], freqLabel, addons, total };
 });
 
-// Carry the estimate details into the quote form when "Book It" is clicked
-const SERVICE_OPTION_FOR_TYPE = {
-  "Standard clean": "Standard / Recurring",
-  "Deep cleaning": "Deep Cleaning",
-  "Move in / move out": "Move In / Move Out",
-};
-
-document.getElementById("est-book").addEventListener("click", () => {
-  if (!lastEstimate) return;
-  const msg = document.getElementById("q-msg");
-  if (!msg.value) {
-    const parts = [
-      `${lastEstimate.typeLabel} — ${lastEstimate.tierLabel}`,
-      lastEstimate.freqLabel,
-      lastEstimate.addons.length
-        ? `add-ons: ${lastEstimate.addons.map((a) => a.name).join(", ")}`
-        : null,
-    ].filter(Boolean);
-    msg.value = `${parts.join(", ")} (online estimate $${lastEstimate.total})`;
-  }
-  const mapped = SERVICE_OPTION_FOR_TYPE[lastEstimate.typeLabel];
-  if (mapped) document.getElementById("q-service").value = mapped;
-});
+// "Book This Clean" is a plain link straight to the Square booking page —
+// no handler needed; the customer re-picks size and service there.
 
 // ---------- Membership plans ----------
 // Mirrors the "Membership Plans" tab: monthly price = standard rate ×
@@ -186,17 +165,17 @@ function renderMemberships() {
 memSize.addEventListener("change", renderMemberships);
 renderMemberships();
 
-// Carry the chosen plan into the quote form
+// Memberships need recurring billing set up by hand, so they can't be booked
+// on Square's page — these open the call-back modal with the plan noted.
+let pendingMembership = null;
+
 document.querySelectorAll(".js-mem-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const plan = MEMBERSHIPS[btn.dataset.plan];
     const tier = PRICING.tiers[memSize.value];
     const monthly = document.getElementById(`mem-${btn.dataset.plan}-mo`).textContent;
-    const msg = document.getElementById("q-msg");
-    if (!msg.value) {
-      msg.value = `${plan.label} membership — ${tier.label} (${monthly}/month)`;
-    }
-    document.getElementById("q-service").value = "Standard / Recurring";
+    pendingMembership = `${plan.label} membership — ${tier.label} (${monthly}/month)`;
+    openCallback(`Leave your number and we'll set up your ${plan.label} plan — ${tier.label}, ${monthly}/month.`);
   });
 });
 
@@ -224,87 +203,22 @@ document.querySelectorAll(".js-square-btn").forEach((btn) => {
   }
 });
 
-// ---------- Quote / 20% off form ----------
-// Delivers via FORM_BACKEND_URL when configured; otherwise opens the
-// visitor's email app (mailto). See README.md.
-const quoteForm = document.getElementById("quote-form");
-const quoteStatus = document.getElementById("quote-status");
-
-quoteForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const name = document.getElementById("q-name").value.trim();
-  const phone = document.getElementById("q-phone").value.trim();
-  const email = document.getElementById("q-email").value.trim();
-  const city = document.getElementById("q-city").value;
-  const service = document.getElementById("q-service").value;
-  const msg = document.getElementById("q-msg").value.trim();
-
-  if (!name || phone.replace(/\D/g, "").length < 10) {
-    quoteStatus.textContent = "Please fill in your name and a full phone number so we can text your quote.";
-    quoteStatus.className = "offer__fine is-error";
-    return;
-  }
-
-  const subject = `20% off quote request — ${name} (${city})`;
-
-  const fields = {
-    _subject: subject,
-    name, phone, city, service,
-    email: email || "(not given — text them)",
-    notes: msg || "(none)",
-    form: "quote",
-  };
-  // Customers only get the automatic confirmation email if they left an address
-  if (email) {
-    fields._autoresponse =
-      "Thanks for requesting your Bright & Tidy quote! We've received your details and will text your exact quote shortly — usually within a couple of hours during business hours. — Bright & Tidy Home Cleaning · (951) 593-8266 · brightandtidyco.com";
-  }
-
-  try {
-    const sent = await sendToBackend(fields);
-    if (sent) {
-      quoteForm.reset();
-      quoteStatus.textContent =
-        "Request sent! 🎉 Watch for a text from (951) 593-8266 with your exact quote — usually within a couple of hours.";
-      quoteStatus.className = "offer__fine is-success";
-      return;
-    }
-  } catch {
-    quoteStatus.textContent =
-      `Something went wrong sending your request — please call or text us at (951) 593-8266, or email ${BUSINESS_EMAIL}.`;
-    quoteStatus.className = "offer__fine is-error";
-    return;
-  }
-
-  const body = [
-    `Name: ${name}`,
-    `Phone: ${phone}`,
-    email ? `Email: ${email}` : null,
-    `City: ${city}`,
-    `Service: ${service}`,
-    msg ? `Notes: ${msg}` : null,
-    "",
-    "Sent from the Bright & Tidy website quote form.",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  window.location.href =
-    `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  quoteStatus.textContent =
-    "Almost done — your email app just opened with your request. Hit send and we'll reply with your quote!";
-  quoteStatus.className = "offer__fine is-success";
-});
-
 // ---------- Call-back modal ----------
 const cbModal = document.getElementById("callback-modal");
 const cbStatus = document.getElementById("cb-status");
+const cbSub = document.getElementById("cb-sub");
+const CB_DEFAULT_SUB = cbSub.textContent;
+
+// message: optional custom line (used by the membership buttons)
+function openCallback(message) {
+  cbStatus.className = "callback__status";
+  cbSub.textContent = message || CB_DEFAULT_SUB;
+  cbModal.showModal();
+}
 
 document.getElementById("callback-open").addEventListener("click", () => {
-  cbStatus.className = "callback__status";
-  cbModal.showModal();
+  pendingMembership = null;
+  openCallback();
 });
 
 document.getElementById("callback-close").addEventListener("click", () => cbModal.close());
@@ -326,14 +240,17 @@ document.getElementById("callback-form").addEventListener("submit", async (event
     return;
   }
 
-  const subject = `Call-back request — ${name || phone}`;
+  const subject = pendingMembership
+    ? `Membership request — ${name || phone}`
+    : `Call-back request — ${name || phone}`;
 
   try {
     const sent = await sendToBackend({
       _subject: subject,
       phone,
       name: name || "(not given)",
-      form: "call-back",
+      interested_in: pendingMembership || "(general call-back)",
+      form: pendingMembership ? "membership" : "call-back",
     });
     if (sent) {
       document.getElementById("callback-form").reset();
