@@ -1007,6 +1007,15 @@ textarea.field__input { resize: vertical; }
   font-size: 0.95rem;
 }
 
+/* ---------- request a clean (Jobber form) ---------- */
+.request { background: var(--white); }
+
+.request__form {
+  max-width: 760px;
+  margin-inline: auto;
+  padding: 28px 26px;
+}
+
 /* ---------- refund & cancellation policy ---------- */
 .policy { padding-top: 0; }
 
