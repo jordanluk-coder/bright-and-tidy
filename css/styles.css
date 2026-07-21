@@ -1016,6 +1016,16 @@ textarea.field__input { resize: vertical; }
   padding: 28px 26px;
 }
 
+/* Jobber's embed reports its height as 40px even when the form has rendered
+   (its resize postMessage is broken), collapsing the iframe to a sliver.
+   min-height wins over the inline height the snippet sets, so the form stays
+   visible; if Jobber ever posts a taller height, the inline style takes over. */
+.request__form iframe.jobber-work-request {
+  width: 100%;
+  min-height: 780px;
+  border: 0;
+}
+
 /* ---------- refund & cancellation policy ---------- */
 .policy { padding-top: 0; }
 
