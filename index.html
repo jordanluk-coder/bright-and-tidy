@@ -111,19 +111,21 @@
             <label class="field">
               <span class="field__label">Home size</span>
               <select id="est-size" class="field__input">
-                <option value="t1">1 bed / 1 bath</option>
-                <option value="t2" selected>2 bed / 1–2 bath</option>
-                <option value="t3">3 bed / 2 bath</option>
-                <option value="t4">4 bed / 2–3 bath</option>
-                <option value="t5">5+ bed / 3+ bath</option>
+                <option value="s1">Under 1,000 sq ft (1 bd)</option>
+                <option value="s2" selected>1,000–1,499 sq ft (2 bd)</option>
+                <option value="s3">1,500–1,999 sq ft (3 bd)</option>
+                <option value="s4">2,000–2,499 sq ft (4 bd)</option>
+                <option value="s5">2,500–2,999 sq ft (4–5 bd)</option>
+                <option value="s6">3,000–3,500 sq ft (5+ bd)</option>
+                <option value="custom">Over 3,500 sq ft</option>
               </select>
             </label>
             <label class="field">
               <span class="field__label">Type of cleaning</span>
               <select id="est-type" class="field__input">
-                <option value="standard" selected>Standard clean</option>
-                <option value="deep">Deep cleaning</option>
-                <option value="move">Move in / move out</option>
+                <option value="standard" selected>The Refresh (standard)</option>
+                <option value="deep">The Deep Clean</option>
+                <option value="move">The Fresh Start (move in/out)</option>
               </select>
             </label>
           </div>
@@ -150,7 +152,7 @@
           </details>
           <button type="submit" class="btn btn--primary btn--block">Show My Estimate</button>
           <div class="estimator__result" id="est-result" hidden>
-            <p class="estimator__price" id="est-price">$138</p>
+            <p class="estimator__price" id="est-price">$188</p>
             <p class="estimator__summary" id="est-summary"></p>
             <p class="estimator__note">Straight from our price list — no surprises. Pick your day and time without leaving this page.</p>
             <button type="button" class="btn btn--dark btn--block js-hcp-book" id="est-book">Book This Clean →</button>
@@ -285,7 +287,7 @@
       <div class="section__head section__head--center">
         <p class="eyebrow">Simple packages</p>
         <h2>Fair, flat-rate pricing</h2>
-        <p class="section__sub">Starting rates for a 1-bed, 1-bath home, booked as a one-time visit — exactly what the estimator above quotes. On a recurring schedule? Memberships below save up to 20%.</p>
+        <p class="section__sub">Starting rates for a home under 1,000 sq ft, booked as a one-time visit — exactly what the estimator above quotes. Bigger home? The estimator prices every size. On a recurring schedule? Memberships below save up to 20%.</p>
       </div>
       <div class="pricing__grid">
         <article class="card plan">
@@ -358,11 +360,12 @@
         <label class="field">
           <span class="field__label">Your home size</span>
           <select id="mem-size" class="field__input">
-            <option value="t1">1 bed / 1 bath</option>
-            <option value="t2" selected>2 bed / 1–2 bath</option>
-            <option value="t3">3 bed / 2 bath</option>
-            <option value="t4">4 bed / 2–3 bath</option>
-            <option value="t5">5+ bed / 3+ bath</option>
+            <option value="s1">Under 1,000 sq ft (1 bd)</option>
+            <option value="s2" selected>1,000–1,499 sq ft (2 bd)</option>
+            <option value="s3">1,500–1,999 sq ft (3 bd)</option>
+            <option value="s4">2,000–2,499 sq ft (4 bd)</option>
+            <option value="s5">2,500–2,999 sq ft (4–5 bd)</option>
+            <option value="s6">3,000–3,500 sq ft (5+ bd)</option>
           </select>
         </label>
       </div>
@@ -377,7 +380,7 @@
             <li>Great for low-traffic homes</li>
             <li>Priority scheduling</li>
           </ul>
-          <button type="button" class="btn btn--outline btn--block js-mem-btn" data-plan="monthly">Start Monthly Refresh</button>
+          <button type="button" class="btn btn--outline btn--block js-hcp-book" data-plan="monthly">Start Monthly Refresh</button>
         </article>
         <article class="card plan plan--featured">
           <div class="plan__flag">Most popular</div>
@@ -390,7 +393,7 @@
             <li>26 cleans a year, billed evenly</li>
             <li>Same cleaner every visit</li>
           </ul>
-          <button type="button" class="btn btn--primary btn--block js-mem-btn" data-plan="biweekly">Start Bi-Weekly</button>
+          <button type="button" class="btn btn--primary btn--block js-hcp-book" data-plan="biweekly">Start Bi-Weekly</button>
         </article>
         <article class="card plan">
           <h3>Weekly</h3>
@@ -402,7 +405,7 @@
             <li>Free add-on each quarter</li>
             <li>Same cleaner every visit</li>
           </ul>
-          <button type="button" class="btn btn--outline btn--block js-mem-btn" data-plan="weekly">Start Weekly</button>
+          <button type="button" class="btn btn--outline btn--block js-hcp-book" data-plan="weekly">Start Weekly</button>
         </article>
       </div>
       <div class="memberships__perks">

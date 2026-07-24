@@ -48,28 +48,70 @@ siteNav.querySelectorAll(".nav__link").forEach((link) => {
 });
 
 // ---------- Instant estimate widget ----------
-// Prices mirror the "Price List" tab of Bright-and-Tidy-Pricing real.xlsx.
-// Frequency multipliers apply to STANDARD cleans only, per the price list.
-const PRICING = {
-  tiers: {
-    t1: { label: "1 bed / 1 bath", standard: 132, deep: 180, move: 320 },
-    t2: { label: "2 bed / 1–2 bath", standard: 162, deep: 230, move: 370 },
-    t3: { label: "3 bed / 2 bath", standard: 198, deep: 290, move: 430 },
-    t4: { label: "4 bed / 2–3 bath", standard: 234, deep: 360, move: 500 },
-    t5: { label: "5+ bed / 3+ bath", standard: 276, deep: 430, move: 570 },
+// SINGLE SOURCE OF TRUTH for prices — mirrors the HouseCall Pro price book
+// (Bright_and_Tidy_Pricing_SqFt.docx) exactly, so the site never drifts from
+// what customers see in the online-booking widget. Prices are flat, by square
+// footage. Both the estimator and the memberships section read from SIZES.
+//   oneTime.refresh/deep/move  = one-time flat rates
+//   plans.<freq>.visit         = recurring price per visit
+//   plans.<freq>.month         = recurring price per month (as published)
+const SIZES = {
+  s1: {
+    label: "Under 1,000 sq ft", hint: "1 bd / 1 ba",
+    oneTime: { refresh: 158, deep: 180, move: 320 },
+    plans: { weekly: { visit: 130, month: 562 }, biweekly: { visit: 138, month: 298 }, monthly: { visit: 146, month: 146 } },
   },
-  frequency: {
-    weekly: { label: "Weekly", mult: 0.8 },
-    biweekly: { label: "Every 2 weeks", mult: 0.85 },
-    monthly: { label: "Monthly", mult: 0.9 },
-    onetime: { label: "One-time visit", mult: 1.2 },
+  s2: {
+    label: "1,000–1,499 sq ft", hint: "2 bd",
+    oneTime: { refresh: 188, deep: 215, move: 380 },
+    plans: { weekly: { visit: 155, month: 672 }, biweekly: { visit: 164, month: 355 }, monthly: { visit: 174, month: 174 } },
   },
-  typeLabels: {
-    standard: "Standard clean",
-    deep: "Deep cleaning",
-    move: "Move in / move out",
+  s3: {
+    label: "1,500–1,999 sq ft", hint: "3 bd / 2 ba",
+    oneTime: { refresh: 218, deep: 250, move: 440 },
+    plans: { weekly: { visit: 179, month: 776 }, biweekly: { visit: 190, month: 412 }, monthly: { visit: 201, month: 201 } },
   },
+  s4: {
+    label: "2,000–2,499 sq ft", hint: "4 bd",
+    oneTime: { refresh: 248, deep: 285, move: 500 },
+    plans: { weekly: { visit: 204, month: 884 }, biweekly: { visit: 217, month: 470 }, monthly: { visit: 229, month: 229 } },
+  },
+  s5: {
+    label: "2,500–2,999 sq ft", hint: "4–5 bd",
+    oneTime: { refresh: 278, deep: 320, move: 560 },
+    plans: { weekly: { visit: 229, month: 992 }, biweekly: { visit: 243, month: 527 }, monthly: { visit: 257, month: 257 } },
+  },
+  s6: {
+    label: "3,000–3,500 sq ft", hint: "5+ bd",
+    oneTime: { refresh: 308, deep: 355, move: 620 },
+    plans: { weekly: { visit: 253, month: 1096 }, biweekly: { visit: 269, month: 583 }, monthly: { visit: 285, month: 285 } },
+  },
+  // "custom" (over 3,500 sq ft) has no fixed price — handled as a call-back quote.
 };
+
+const FREQ_LABELS = {
+  onetime: "One-time visit",
+  weekly: "Weekly — save 20%",
+  biweekly: "Every 2 weeks — save 15%",
+  monthly: "Monthly — save 10%",
+};
+
+const TYPE_LABELS = {
+  standard: "The Refresh (standard)",
+  deep: "The Deep Clean",
+  move: "The Fresh Start (move in/out)",
+};
+
+// Per-visit price for a size + service type + frequency.
+// Deep/Move are one-time only; recurring prices apply to the standard clean.
+// Returns null for the custom (over 3,500 sq ft) size.
+function visitPriceFor(sizeKey, type, freq) {
+  const s = SIZES[sizeKey];
+  if (!s) return null;
+  if (type !== "standard") return s.oneTime[type];
+  if (freq === "onetime" || !freq) return s.oneTime.refresh;
+  return s.plans[freq].visit;
+}
 
 const estimatorForm = document.getElementById("estimator-form");
 const estResult = document.getElementById("est-result");
@@ -103,81 +145,80 @@ estTypeSelect.addEventListener("change", () => {
 });
 refreshAddonAvailability();
 
+const estBook = document.getElementById("est-book");
+
 estimatorForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const tier = PRICING.tiers[document.getElementById("est-size").value];
+  const sizeKey = document.getElementById("est-size").value;
+  const size = SIZES[sizeKey];
   const type = estTypeSelect.value;
+  const freq = type === "standard" ? document.getElementById("est-freq").value : "onetime";
   const addons = Array.from(
     document.querySelectorAll("#est-addons input:checked")
   ).map((cb) => ({ name: cb.dataset.name, price: Number(cb.value) }));
 
-  let visitPrice = tier[type];
-  let freqLabel = null;
-  if (type === "standard") {
-    const freq = PRICING.frequency[document.getElementById("est-freq").value];
-    visitPrice *= freq.mult;
-    freqLabel = freq.label;
+  // Over 3,500 sq ft has no fixed price — send them to a custom quote instead.
+  if (!size) {
+    estPrice.textContent = "Custom";
+    estSummary.textContent = "Over 3,500 sq ft · we'll give you a fast custom quote";
+    estBook.textContent = "Get a custom quote →";
+    estBook.classList.remove("js-hcp-book");
+    estBook.classList.add("js-custom-quote");
+    estResult.hidden = false;
+    lastEstimate = null;
+    return;
   }
 
+  const freqLabel = type === "standard" && freq !== "onetime" ? FREQ_LABELS[freq].split(" — ")[0] : null;
   const addonTotal = addons.reduce((sum, a) => sum + a.price, 0);
-  const total = Math.round(visitPrice) + addonTotal;
+  const total = visitPriceFor(sizeKey, type, freq) + addonTotal;
 
   estPrice.textContent = `$${total}`;
   estSummary.textContent = [
-    tier.label,
-    PRICING.typeLabels[type],
+    size.label,
+    TYPE_LABELS[type],
     freqLabel,
     addons.length ? `${addons.length} add-on${addons.length > 1 ? "s" : ""}` : null,
   ]
     .filter(Boolean)
     .join(" · ");
+  estBook.textContent = "Book This Clean →";
+  estBook.classList.add("js-hcp-book");
+  estBook.classList.remove("js-custom-quote");
   estResult.hidden = false;
 
-  lastEstimate = { tierLabel: tier.label, typeLabel: PRICING.typeLabels[type], freqLabel, addons, total };
+  lastEstimate = { tierLabel: size.label, typeLabel: TYPE_LABELS[type], freqLabel, addons, total };
 });
 
 // "Book This Clean" opens the HouseCall Pro booking modal (see the .js-hcp-book
 // handler below); the customer re-picks size and service there.
 
 // ---------- Membership plans ----------
-// Mirrors the "Membership Plans" tab: monthly price = standard rate ×
-// frequency discount × visits per month (bi-weekly 26/yr ÷ 12, weekly 52 ÷ 12).
+// Reads recurring prices straight from SIZES (the HouseCall Pro price book), so
+// the cards always match the widget. Buttons open the HCP booking modal.
 const MEMBERSHIPS = {
-  monthly: { label: "Monthly Refresh", freq: "monthly", visitsPerMonth: 1 },
-  biweekly: { label: "Bi-Weekly", freq: "biweekly", visitsPerMonth: 26 / 12 },
-  weekly: { label: "Weekly", freq: "weekly", visitsPerMonth: 52 / 12 },
+  monthly: { label: "Monthly Refresh" },
+  biweekly: { label: "Bi-Weekly" },
+  weekly: { label: "Weekly" },
 };
 
 const memSize = document.getElementById("mem-size");
 
 function renderMemberships() {
-  const tier = PRICING.tiers[memSize.value];
-  Object.entries(MEMBERSHIPS).forEach(([key, plan]) => {
-    const perVisit = tier.standard * PRICING.frequency[plan.freq].mult;
-    document.getElementById(`mem-${key}-mo`).textContent =
-      `$${Math.round(perVisit * plan.visitsPerMonth)}`;
-    document.getElementById(`mem-${key}-visit`).textContent =
-      `$${Math.round(perVisit)} per visit`;
+  const size = SIZES[memSize.value];
+  Object.keys(MEMBERSHIPS).forEach((key) => {
+    document.getElementById(`mem-${key}-mo`).textContent = `$${size.plans[key].month}`;
+    document.getElementById(`mem-${key}-visit`).textContent = `$${size.plans[key].visit} per visit`;
   });
 }
 
 memSize.addEventListener("change", renderMemberships);
 renderMemberships();
 
-// Memberships need recurring billing set up by hand, so they can't go through
-// online booking — these open the call-back modal with the plan noted.
-let pendingMembership = null;
-
-document.querySelectorAll(".js-mem-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const plan = MEMBERSHIPS[btn.dataset.plan];
-    const tier = PRICING.tiers[memSize.value];
-    const monthly = document.getElementById(`mem-${btn.dataset.plan}-mo`).textContent;
-    pendingMembership = `${plan.label} membership — ${tier.label} (${monthly}/month)`;
-    openCallback(`Leave your number and we'll set up your ${plan.label} plan — ${tier.label}, ${monthly}/month.`);
-  });
-});
+// Membership "Start …" buttons carry the .js-hcp-book class, so they open the
+// HouseCall Pro booking modal via the delegated handler below — customers pick
+// their recurring plan there. No separate call-back handler is needed.
 
 // ---------- Review button ----------
 // Hidden until a Google Business review link is pasted into data-review-link
@@ -214,6 +255,15 @@ document.addEventListener("click", (e) => {
   })();
 });
 
+// Homes over 3,500 sq ft have no fixed online price — the estimator swaps its
+// Book button to .js-custom-quote, which opens the call-back modal instead.
+document.addEventListener("click", (e) => {
+  const trigger = e.target.closest(".js-custom-quote");
+  if (!trigger) return;
+  e.preventDefault();
+  openCallback("Homes over 3,500 sq ft get a custom quote — leave your number and we'll call or text you right back with your price.");
+});
+
 // ---------- Call-back modal ----------
 const cbModal = document.getElementById("callback-modal");
 const cbStatus = document.getElementById("cb-status");
@@ -227,10 +277,7 @@ function openCallback(message) {
   cbModal.showModal();
 }
 
-document.getElementById("callback-open").addEventListener("click", () => {
-  pendingMembership = null;
-  openCallback();
-});
+document.getElementById("callback-open").addEventListener("click", () => openCallback());
 
 document.getElementById("callback-close").addEventListener("click", () => cbModal.close());
 
@@ -251,17 +298,12 @@ document.getElementById("callback-form").addEventListener("submit", async (event
     return;
   }
 
-  const subject = pendingMembership
-    ? `Membership request — ${name || phone}`
-    : `Call-back request — ${name || phone}`;
-
   try {
     const sent = await sendToBackend({
-      _subject: subject,
+      _subject: `Call-back request — ${name || phone}`,
       phone,
       name: name || "(not given)",
-      interested_in: pendingMembership || "(general call-back)",
-      form: pendingMembership ? "membership" : "call-back",
+      form: "call-back",
     });
     if (sent) {
       document.getElementById("callback-form").reset();
