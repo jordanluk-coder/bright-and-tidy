@@ -42,9 +42,10 @@ are wired into the contact links and SEO metadata.)*
      `PRICING` standard rates — visits/month live in the `MEMBERSHIPS` object in
      `js/main.js` (monthly 1, bi-weekly 2.17, weekly 4.33)
 
-   **Membership payments tip:** Square supports recurring billing — in your
-   Square Dashboard look for *Subscriptions* (or use recurring Invoices) to
-   charge members monthly, matching the site's membership prices.
+   **Membership payments tip:** memberships aren't self-serve online — the
+   membership buttons open the call-back modal. Set each member up once with a
+   recurring invoice / subscription in whichever processor you're billing
+   through, matching the site's membership prices.
 
 3. **Email** — the site shows `info@brightandtidyco.com` everywhere (contact
    links, quote form, search metadata). ⚠️ **That address must exist before
@@ -64,29 +65,58 @@ are wired into the contact links and SEO metadata.)*
 
 ---
 
-## 💳 Square — fully configured ✅
+## 📅 Online booking — HouseCall Pro (embedded)
 
-**Online booking (primary):** the header "Book Online" button and all three
-pricing "Book…" buttons open the Square Appointments booking page
-(`https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start`,
-set via `data-square-link` in `index.html`). Customers pick the service, home
-size, and an open time slot; Square collects a **$50 deposit** and saves their
-card on file. Configured in Square: three services × five home-size variations
-(prices mirror the Price List), 1-day cancellation cutoff with the policy text,
-deposit rule on all services, card on file, and client self-rescheduling.
+Booking runs on **HouseCall Pro** and is **embedded in the page** — the widget
+opens in a modal on top of the site, so customers never leave
+brightandtidyco.com.
 
-- **Charging the balance after a clean:** open the appointment in the Square
-  app → charge the remainder to the card on file (one tap).
-- **Blocking days off:** Square app → Calendar → add a Personal Event or edit
-  your hours — blocked time never shows to customers.
-- **The old $50 payment link** (`https://square.link/u/QOSsJGtU`) still works —
-  handy for text-to-pay when someone books by phone instead.
-- **Memberships:** use Square **recurring invoices** (Dashboard → Invoices →
-  Recurring) — set each member up once and Square auto-bills monthly.
+**How it's wired:**
 
-> 🔐 **Security note:** never share your Square password with anyone — no
-> legitimate service or developer needs it. Since it was shared in chat while
-> setting up this site, please change it in Square → Account → Sign-in & security.
+- The widget script sits just before `js/main.js` at the bottom of
+  `index.html`. It loads async and defines the global `HCPWidget`:
+
+  ```html
+  <script async src="https://online-booking.housecallpro.com/script.js?token=741ba4f4405848329b903c71b3509811&orgName=bright--tidy-llc"></script>
+  ```
+
+- Any element with the class **`js-hcp-book`** opens the booking modal. A
+  single delegated click handler in `js/main.js` calls
+  `HCPWidget.openModal()`, so **to add another Book button anywhere on the
+  site, just give it that class** — no extra JavaScript needed.
+- Current triggers (7): header CTA, hero button, the estimator's "Book This
+  Clean", the three pricing-card buttons, and the "Book Online Now" button in
+  the **Book your clean** section (`#book`).
+- If the widget script is slow, the handler retries for 3 seconds and then
+  falls back to opening the "Get a call back" modal, so a click is never dead.
+
+**What customers see:** Home Cleaning → *One-Time Cleaning* (The Refresh, The
+Deep Clean, The Fresh Start) or *Add-Ons*, each with the six square-footage
+tiers from your HouseCall Pro price book.
+
+- **Blocking days off / availability:** HouseCall Pro → Settings → Online
+  Booking (arrival windows and availability) and your schedule.
+- **Memberships** still aren't self-serve — the membership buttons open the
+  call-back modal so you can set each one up by hand.
+
+> **Note:** your *Recurring Cleaning* services (weekly / bi-weekly / monthly)
+> are in the price book but are **not** offered on the online booking page —
+> only One-Time Cleaning and Add-Ons appear. Enable them in HouseCall Pro →
+> Settings → Online Booking if you want customers to self-book recurring.
+
+> 🔐 **Security note:** never share a password for HouseCall Pro or any other
+> account with anyone — no legitimate service or developer needs it. A Square
+> password was shared in chat during an earlier setup session; even though
+> Square is no longer used by this site, change it (or close the account) if
+> that hasn't been done yet.
+
+### Platforms no longer used
+
+Booking was previously trialled on **Square Appointments**, **BookingKoala**,
+and **Jobber**. All three are retired as of 2026-07-23 — HouseCall Pro is the
+only booking system. Nothing in this site references them anymore. If you're
+done with those accounts, cancel any paid plans (BookingKoala Plus and the
+Jobber trial in particular) so they stop billing.
 
 ---
 
@@ -119,9 +149,8 @@ Any static host works. Easiest options:
 - **Netlify** (free): drag-and-drop the `bright-and-tidy-website` folder at
   [app.netlify.com/drop](https://app.netlify.com/drop) — live in ~30 seconds.
 - **GitHub Pages** (free): push this folder to a repo → Settings → Pages.
-- **Square Online**: since you have Square, note that Square also offers simple
-  websites — but this custom site is faster and fully yours; you can still use
-  Square purely for payments.
+  *(This is what the live site uses — repo `jordanluk-coder/bright-and-tidy`,
+  deployed by the `static.yml` Actions workflow.)*
 
 Then connect your domain `brightandtidyco.com` in your host's settings
 (both Netlify and GitHub Pages walk you through adding the DNS records at your

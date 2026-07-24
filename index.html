@@ -68,7 +68,7 @@
         <a href="#areas" class="nav__link">Service Areas</a>
         <a href="#faq" class="nav__link">FAQ</a>
       </nav>
-      <a href="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start" target="_blank" rel="noopener" class="btn btn--primary header__cta">Book Online</a>
+      <button type="button" class="btn btn--primary header__cta js-hcp-book">Book Online</button>
       <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -94,7 +94,7 @@
           <li><svg viewBox="0 0 24 24" class="ico ico--blue"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2l-6.1 3.4 1.4-6.8L2.2 9.1l6.9-.8z"/></svg> Satisfaction guaranteed</li>
         </ul>
         <div class="hero__actions">
-          <a href="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start" target="_blank" rel="noopener" class="btn btn--primary btn--lg">Book Online Now</a>
+          <button type="button" class="btn btn--primary btn--lg js-hcp-book">Book Online Now</button>
           <button type="button" class="btn btn--ghost btn--lg" id="callback-open">
             <svg viewBox="0 0 24 24" class="ico"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.5 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
             Get a call back
@@ -152,8 +152,8 @@
           <div class="estimator__result" id="est-result" hidden>
             <p class="estimator__price" id="est-price">$138</p>
             <p class="estimator__summary" id="est-summary"></p>
-            <p class="estimator__note">Straight from our price list — no surprises. Pick your day and time on the next screen.</p>
-            <a href="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start" target="_blank" rel="noopener" class="btn btn--dark btn--block" id="est-book">Book This Clean →</a>
+            <p class="estimator__note">Straight from our price list — no surprises. Pick your day and time without leaving this page.</p>
+            <button type="button" class="btn btn--dark btn--block js-hcp-book" id="est-book">Book This Clean →</button>
           </div>
         </form>
       </div>
@@ -299,8 +299,7 @@
             <li>Vacuum + mop all floors</li>
             <li>Trash out, beds made</li>
           </ul>
-          <!-- Opens the $50 booking-deposit checkout (Square link in data-square-link) -->
-          <a href="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start" class="btn btn--outline btn--block js-square-btn" data-square-link="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start">Book The Refresh</a>
+          <button type="button" class="btn btn--outline btn--block js-hcp-book">Book The Refresh</button>
         </article>
         <article class="card plan plan--featured">
           <div class="plan__flag">Most popular</div>
@@ -314,8 +313,7 @@
             <li>Detailed grout, fixtures &amp; vents</li>
             <li>Window sills &amp; blinds dusted</li>
           </ul>
-          <!-- Opens the $50 booking-deposit checkout (Square link in data-square-link) -->
-          <a href="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start" class="btn btn--primary btn--block js-square-btn" data-square-link="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start">Book The Deep Clean</a>
+          <button type="button" class="btn btn--primary btn--block js-hcp-book">Book The Deep Clean</button>
         </article>
         <article class="card plan">
           <h3>The Fresh Start</h3>
@@ -328,8 +326,7 @@
             <li>Deposit-friendly detail work</li>
             <li>Flexible scheduling around your move</li>
           </ul>
-          <!-- Opens the $50 booking-deposit checkout (Square link in data-square-link) -->
-          <a href="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start" class="btn btn--outline btn--block js-square-btn" data-square-link="https://app.squareup.com/appointments/book/7bcyuyt6g1f9l9/LX3E49911ABSN/start">Book The Fresh Start</a>
+          <button type="button" class="btn btn--outline btn--block js-hcp-book">Book The Fresh Start</button>
         </article>
       </div>
       <div class="addons">
@@ -345,7 +342,7 @@
         </div>
         <p class="addons__note">Add-on prices apply to standard cleans. The Deep Clean and The Fresh Start already cover these — only dishes, laundry, and extra pet hair can be added on top.</p>
       </div>
-      <p class="pricing__foot">📅 Book online in about a minute — pick your home size, choose an open time slot, and reserve with a <strong>$50 deposit</strong> through Square's secure checkout. The deposit counts toward your total; the balance is due after your clean.</p>
+      <p class="pricing__foot">📅 <strong>Book online in about a minute</strong> — pick your cleaning, your home size, and an open time slot without ever leaving this page. You'll get a confirmation by text and email, and payment is handled after your clean.</p>
     </div>
   </section>
 
@@ -460,18 +457,24 @@
     </div>
   </section>
 
-  <!-- ======= REQUEST A CLEAN (Jobber form) ======= -->
-  <section class="section request" id="request">
+  <!-- ======= BOOK ONLINE (HouseCall Pro widget) ======= -->
+  <!-- The widget opens in a modal over this page — customers never leave the
+       site. Every "Book" button on the page triggers it (see .js-hcp-book). -->
+  <section class="section booking" id="book">
     <div class="container">
       <div class="section__head section__head--center">
-        <p class="eyebrow">Request your clean</p>
-        <h2>Tell us about your home</h2>
-        <p class="section__sub">Send us your details and we'll confirm your exact quote and time — usually within a couple of hours during business hours.</p>
+        <p class="eyebrow">Book your clean</p>
+        <h2>Pick your service, day &amp; time</h2>
+        <p class="section__sub">Booking takes about a minute and happens right here — choose your cleaning, your home size, and an open time slot, and you're on the calendar.</p>
       </div>
-      <div class="card request__form">
-        <div id="ad492359-be51-4ea0-9e42-92f32771d36d-5002190"></div>
-        <link rel="stylesheet" href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css" media="screen" />
-        <script src="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js" clienthub_id="ad492359-be51-4ea0-9e42-92f32771d36d-5002190" form_url="https://clienthub.getjobber.com/client_hubs/ad492359-be51-4ea0-9e42-92f32771d36d/public/work_request/embedded_work_request_form?form_id=5002190"></script>
+      <div class="card booking__card">
+        <ul class="booking__steps">
+          <li><span class="booking__num">1</span> Choose your cleaning and home size</li>
+          <li><span class="booking__num">2</span> Pick an open day and time</li>
+          <li><span class="booking__num">3</span> Add your details and confirm</li>
+        </ul>
+        <button type="button" class="btn btn--primary btn--lg btn--block js-hcp-book">Book Online Now</button>
+        <p class="booking__note">Rather talk it through first? Call or text <a href="tel:+19515938266">(951) 593-8266</a>.</p>
       </div>
     </div>
   </section>
@@ -497,7 +500,7 @@
       </details>
       <details class="faq__item">
         <summary>How does payment work?</summary>
-        <p>Book online and reserve your time slot with a $50 deposit through Square's secure checkout — card, Apple Pay, or Google Pay all work, and your card is kept securely on file. The deposit counts toward your total, the balance is due after your clean, and receipts are sent automatically. Prefer to talk first? Hit "Get a call back" and we'll ring you from (951) 593-8266.</p>
+        <p>Book your time slot online and you'll get a confirmation by text and email right away. Payment is handled after your clean — card, Apple Pay, or Google Pay all work — and your receipt is sent automatically. Prefer to talk first? Hit "Get a call back" and we'll ring you from (951) 593-8266.</p>
       </details>
       <details class="faq__item">
         <summary>What if I'm not happy with the cleaning?</summary>
@@ -527,7 +530,7 @@
         <h3>Memberships</h3>
         <p>Pause or cancel anytime with 14 days' notice. If you've already been billed for visits that haven't happened yet, we refund those unused visits in full.</p>
         <h3>How refunds arrive</h3>
-        <p>All refunds go back to your original payment method through Square, typically within 5–10 business days.</p>
+        <p>All refunds go back to your original payment method, typically within 5–10 business days.</p>
       </div>
     </div>
   </section>
@@ -562,12 +565,12 @@
         <a href="tel:+19515938266">(951) 593-8266</a>
         <a href="mailto:info@brightandtidyco.com">info@brightandtidyco.com</a>
         <a href="#estimate">Get an instant estimate</a>
-        <a href="#request">Request a clean</a>
+        <a href="#book">Book online</a>
       </div>
     </div>
     <div class="container footer__legal">
       <p>© <span id="year">2026</span> Bright &amp; Tidy Home Cleaning · Hemet, CA</p>
-      <p>Licensed &amp; insured · Payments secured by Square</p>
+      <p>Licensed &amp; insured · Secure online payments</p>
     </div>
   </footer>
 
@@ -590,6 +593,10 @@
       <p class="callback__direct">Prefer to reach out yourself? Call or text <a href="tel:+19515938266">(951) 593-8266</a></p>
     </form>
   </dialog>
+
+  <!-- HouseCall Pro online booking widget. Loads async and registers the global
+       HCPWidget; every .js-hcp-book button calls HCPWidget.openModal() (js/main.js). -->
+  <script async src="https://online-booking.housecallpro.com/script.js?token=741ba4f4405848329b903c71b3509811&orgName=bright--tidy-llc"></script>
 
   <script src="js/main.js"></script>
 </body>

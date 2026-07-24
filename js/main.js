@@ -137,8 +137,8 @@ estimatorForm.addEventListener("submit", (event) => {
   lastEstimate = { tierLabel: tier.label, typeLabel: PRICING.typeLabels[type], freqLabel, addons, total };
 });
 
-// "Book This Clean" is a plain link straight to the Square booking page —
-// no handler needed; the customer re-picks size and service there.
+// "Book This Clean" opens the HouseCall Pro booking modal (see the .js-hcp-book
+// handler below); the customer re-picks size and service there.
 
 // ---------- Membership plans ----------
 // Mirrors the "Membership Plans" tab: monthly price = standard rate ×
@@ -165,8 +165,8 @@ function renderMemberships() {
 memSize.addEventListener("change", renderMemberships);
 renderMemberships();
 
-// Memberships need recurring billing set up by hand, so they can't be booked
-// on Square's page — these open the call-back modal with the plan noted.
+// Memberships need recurring billing set up by hand, so they can't go through
+// online booking — these open the call-back modal with the plan noted.
 let pendingMembership = null;
 
 document.querySelectorAll(".js-mem-btn").forEach((btn) => {
@@ -191,16 +191,27 @@ if (reviewBtn) {
   }
 }
 
-// ---------- Square payment buttons ----------
-// Paste your Square payment links into the data-square-link attributes
-// in index.html (see README.md). Until then, buttons lead to the quote form.
-document.querySelectorAll(".js-square-btn").forEach((btn) => {
-  const link = btn.dataset.squareLink;
-  if (link) {
-    btn.href = link;
-    btn.target = "_blank";
-    btn.rel = "noopener";
-  }
+// ---------- Online booking (HouseCall Pro) ----------
+// The widget script in index.html loads async and defines window.HCPWidget,
+// which opens the booking flow in a modal over the page. Delegated so every
+// .js-hcp-book button works, including any added later.
+document.addEventListener("click", (e) => {
+  const trigger = e.target.closest(".js-hcp-book");
+  if (!trigger) return;
+  e.preventDefault();
+
+  // A visitor can click before the async script lands, so poll briefly (3s)
+  // before falling back to the call-back modal.
+  let tries = 0;
+  (function openWidget() {
+    if (window.HCPWidget && typeof window.HCPWidget.openModal === "function") {
+      window.HCPWidget.openModal();
+    } else if (tries++ < 20) {
+      setTimeout(openWidget, 150);
+    } else {
+      openCallback("Our booking window didn't load. Leave your number and we'll call or text you right back to get you scheduled.");
+    }
+  })();
 });
 
 // ---------- Call-back modal ----------
