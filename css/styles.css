@@ -430,10 +430,12 @@ textarea.field__input { resize: vertical; }
 }
 .estimator__addon-list input { accent-color: var(--blue); width: 16px; height: 16px; }
 
-.estimator__addon-list label.is-included { opacity: 0.55; cursor: default; }
-.estimator__addon-list label.is-included span {
+/* Shown when a service bundles extras the booking widget doesn't sell on top. */
+.estimator__addon-note {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  line-height: 1.5;
   color: var(--muted);
-  font-weight: 600;
   font-style: italic;
 }
 

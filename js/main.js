@@ -48,46 +48,53 @@ siteNav.querySelectorAll(".nav__link").forEach((link) => {
 });
 
 // ---------- Instant estimate widget ----------
-// SINGLE SOURCE OF TRUTH for prices — mirrors the HouseCall Pro price book
-// (Bright_and_Tidy_Pricing_SqFt.docx) exactly, so the site never drifts from
-// what customers see in the online-booking widget. Prices are flat, by square
-// footage. Both the estimator and the memberships section read from SIZES.
-//   oneTime.refresh/deep/move  = one-time flat rates
-//   plans.<freq>.visit         = recurring price per visit
-//   plans.<freq>.month         = recurring price per month (as published)
+// SINGLE SOURCE OF TRUTH for prices — mirrors the live HouseCall Pro online
+// booking form (book.housecallpro.com/book/bright--tidy-llc), verified against
+// it on 2026-07-26, so the estimator never quotes a price the booking widget
+// won't honour. HCP's size brackets are 1-1000 / 1001-1499 / 1500-1999 /
+// 2000-2499 / 2500-2999 / 3000-3500 — mirrored here exactly.
+//   oneTime.refresh/deep/move = flat one-time rates shown in the widget
+//   plans.<freq>              = recurring price PER VISIT
+// HCP doesn't display recurring prices in the widget, but each recurring
+// service's description states the rule: weekly save 20%, bi-weekly 15%,
+// monthly 10% off the one-time Refresh. These are that rule applied.
 const SIZES = {
   s1: {
     label: "Under 1,000 sq ft", hint: "1 bd / 1 ba",
-    oneTime: { refresh: 158, deep: 180, move: 320 },
-    plans: { weekly: { visit: 130, month: 562 }, biweekly: { visit: 138, month: 298 }, monthly: { visit: 146, month: 146 } },
+    oneTime: { refresh: 183, deep: 205, move: 345 },
+    plans: { weekly: 146, biweekly: 156, monthly: 165 },
   },
   s2: {
-    label: "1,000–1,499 sq ft", hint: "2 bd",
-    oneTime: { refresh: 188, deep: 215, move: 380 },
-    plans: { weekly: { visit: 155, month: 672 }, biweekly: { visit: 164, month: 355 }, monthly: { visit: 174, month: 174 } },
+    label: "1,001–1,499 sq ft", hint: "2 bd",
+    oneTime: { refresh: 213, deep: 240, move: 405 },
+    plans: { weekly: 170, biweekly: 181, monthly: 192 },
   },
   s3: {
     label: "1,500–1,999 sq ft", hint: "3 bd / 2 ba",
-    oneTime: { refresh: 218, deep: 250, move: 440 },
-    plans: { weekly: { visit: 179, month: 776 }, biweekly: { visit: 190, month: 412 }, monthly: { visit: 201, month: 201 } },
+    oneTime: { refresh: 243, deep: 275, move: 465 },
+    plans: { weekly: 194, biweekly: 207, monthly: 219 },
   },
   s4: {
     label: "2,000–2,499 sq ft", hint: "4 bd",
-    oneTime: { refresh: 248, deep: 285, move: 500 },
-    plans: { weekly: { visit: 204, month: 884 }, biweekly: { visit: 217, month: 470 }, monthly: { visit: 229, month: 229 } },
+    oneTime: { refresh: 273, deep: 310, move: 525 },
+    plans: { weekly: 218, biweekly: 232, monthly: 246 },
   },
   s5: {
     label: "2,500–2,999 sq ft", hint: "4–5 bd",
-    oneTime: { refresh: 278, deep: 320, move: 560 },
-    plans: { weekly: { visit: 229, month: 992 }, biweekly: { visit: 243, month: 527 }, monthly: { visit: 257, month: 257 } },
+    oneTime: { refresh: 303, deep: 345, move: 585 },
+    plans: { weekly: 242, biweekly: 258, monthly: 273 },
   },
   s6: {
     label: "3,000–3,500 sq ft", hint: "5+ bd",
-    oneTime: { refresh: 308, deep: 355, move: 620 },
-    plans: { weekly: { visit: 253, month: 1096 }, biweekly: { visit: 269, month: 583 }, monthly: { visit: 285, month: 285 } },
+    oneTime: { refresh: 333, deep: 380, move: 645 },
+    plans: { weekly: 266, biweekly: 283, monthly: 300 },
   },
-  // "custom" (over 3,500 sq ft) has no fixed price — handled as a call-back quote.
+  // "custom" (over 3,500 sq ft) isn't offered in HCP online booking —
+  // the estimator routes it to a call-back quote instead.
 };
+
+// Bi-weekly bills as 26 cleans a year ÷ 12 months, weekly as 52 ÷ 12.
+const VISITS_PER_MONTH = { weekly: 52 / 12, biweekly: 26 / 12, monthly: 1 };
 
 const FREQ_LABELS = {
   onetime: "One-time visit",
@@ -102,15 +109,33 @@ const TYPE_LABELS = {
   move: "The Fresh Start (move in/out)",
 };
 
+// Add-on catalogue and, per service, exactly which ones HouseCall Pro offers
+// at online booking. The Fresh Start bundles the kitchen extras, so HCP only
+// sells windows/laundry/dishes on top of it.
+const ADDONS = {
+  fridge:   { label: "Inside refrigerator", price: 45 },
+  oven:     { label: "Inside oven", price: 45 },
+  windows:  { label: "Interior windows", price: 75 },
+  cabinets: { label: "Inside cabinets &amp; drawers", price: 50 },
+  laundry:  { label: "Laundry (per load)", price: 30 },
+  dishes:   { label: "Dishes (per load)", price: 25 },
+};
+
+const ADDONS_FOR = {
+  standard: ["fridge", "oven", "cabinets", "laundry", "dishes"],
+  deep: ["fridge", "oven", "windows", "cabinets", "laundry", "dishes"],
+  move: ["windows", "laundry", "dishes"],
+};
+
 // Per-visit price for a size + service type + frequency.
-// Deep/Move are one-time only; recurring prices apply to the standard clean.
+// Deep/Move are one-time only; recurring pricing applies to the standard clean.
 // Returns null for the custom (over 3,500 sq ft) size.
 function visitPriceFor(sizeKey, type, freq) {
   const s = SIZES[sizeKey];
   if (!s) return null;
   if (type !== "standard") return s.oneTime[type];
   if (freq === "onetime" || !freq) return s.oneTime.refresh;
-  return s.plans[freq].visit;
+  return s.plans[freq];
 }
 
 const estimatorForm = document.getElementById("estimator-form");
@@ -122,20 +147,26 @@ const estFreqField = document.getElementById("est-freq-field");
 
 let lastEstimate = null;
 
-// Deep cleans and move in / move out packages already bundle most extras —
-// only genuinely additive add-ons stay selectable for those services.
-const EXTRA_ONLY_ADDONS = ["Dishes (per load)", "Laundry (1 load)", "Extra pet hair"];
+// Show exactly the add-ons HouseCall Pro offers for the chosen service, so the
+// estimator can't include an extra the booking widget won't let them pick.
+const addonNote = document.getElementById("est-addon-note");
+const ADDON_NOTES = {
+  move: "Inside the oven, refrigerator and cabinets are already included in The Fresh Start.",
+  standard: "Interior windows are available on The Deep Clean — just ask and we'll quote it.",
+};
 
 function refreshAddonAvailability() {
-  const bundled = estTypeSelect.value !== "standard";
+  const type = estTypeSelect.value;
+  const offered = ADDONS_FOR[type] || [];
   document.querySelectorAll("#est-addons input").forEach((cb) => {
-    const off = bundled && !EXTRA_ONLY_ADDONS.includes(cb.dataset.name);
-    cb.disabled = off;
-    if (off) cb.checked = false;
+    const on = offered.includes(cb.dataset.addon);
     const label = cb.closest("label");
-    label.classList.toggle("is-included", off);
-    label.querySelector("span").textContent = off ? "Included" : `+$${cb.value}`;
+    label.hidden = !on;
+    cb.disabled = !on;
+    if (!on) cb.checked = false;
   });
+  addonNote.textContent = ADDON_NOTES[type] || "";
+  addonNote.hidden = !ADDON_NOTES[type];
 }
 
 // Frequency discounts only apply to standard cleans — hide the field otherwise
@@ -156,7 +187,7 @@ estimatorForm.addEventListener("submit", (event) => {
   const freq = type === "standard" ? document.getElementById("est-freq").value : "onetime";
   const addons = Array.from(
     document.querySelectorAll("#est-addons input:checked")
-  ).map((cb) => ({ name: cb.dataset.name, price: Number(cb.value) }));
+  ).map((cb) => ({ name: ADDONS[cb.dataset.addon].label, price: ADDONS[cb.dataset.addon].price }));
 
   // Over 3,500 sq ft has no fixed price — send them to a custom quote instead.
   if (!size) {
@@ -208,8 +239,10 @@ const memSize = document.getElementById("mem-size");
 function renderMemberships() {
   const size = SIZES[memSize.value];
   Object.keys(MEMBERSHIPS).forEach((key) => {
-    document.getElementById(`mem-${key}-mo`).textContent = `$${size.plans[key].month}`;
-    document.getElementById(`mem-${key}-visit`).textContent = `$${size.plans[key].visit} per visit`;
+    const visit = size.plans[key];
+    document.getElementById(`mem-${key}-mo`).textContent =
+      `$${Math.round(visit * VISITS_PER_MONTH[key])}`;
+    document.getElementById(`mem-${key}-visit`).textContent = `$${visit} per visit`;
   });
 }
 
