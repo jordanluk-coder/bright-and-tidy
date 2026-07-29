@@ -11,6 +11,21 @@
 const FORM_BACKEND_URL = "https://formsubmit.co/ajax/jordan.luk@brightandtidyco.com";
 const BUSINESS_EMAIL = "info@brightandtidyco.com";
 
+/* ---------- Google Ads conversion tracking ----------
+   The Google tag (AW-18326347594) loads from index.html. These send_to values
+   are the conversion actions created in Google Ads on 2026-07-28. Firing is a
+   no-op if gtag hasn't loaded (offline, ad blocker, opening the file locally),
+   so nothing here can break a form submission. */
+const CONVERSIONS = {
+  callBack: "AW-18326347594/S3u-CLCWn9gcEMq-16JE",
+  clickToCall: "AW-18326347594/q-4OCK2Wn9gcEMq-16JE",
+};
+
+function trackConversion(sendTo) {
+  if (typeof gtag !== "function") return;
+  gtag("event", "conversion", { send_to: sendTo });
+}
+
 // Sends form fields to the backend if configured; returns false otherwise
 // so callers can fall back to a mailto: link.
 async function sendToBackend(fields) {
@@ -340,6 +355,7 @@ document.getElementById("callback-form").addEventListener("submit", async (event
     });
     if (sent) {
       document.getElementById("callback-form").reset();
+      trackConversion(CONVERSIONS.callBack);
       cbStatus.textContent =
         "Got it! 📞 We'll call or text you back from (951) 593-8266 — save the number so you know it's us.";
       cbStatus.className = "callback__status is-success";
@@ -367,6 +383,14 @@ document.getElementById("callback-form").addEventListener("submit", async (event
   cbStatus.textContent =
     "Almost done — your email app just opened with your request. Hit send and we'll be in touch!";
   cbStatus.className = "callback__status is-success";
+});
+
+// ---------- Click-to-call tracking ----------
+// Delegated so it covers every tel: link — top bar, booking section, footer and
+// the call-back modal — including any added later.
+document.addEventListener("click", (e) => {
+  if (!e.target.closest('a[href^="tel:"]')) return;
+  trackConversion(CONVERSIONS.clickToCall);
 });
 
 // ---------- Footer year ----------
