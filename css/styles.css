@@ -1255,3 +1255,95 @@ textarea.field__input { resize: vertical; }
   .footer__inner { grid-template-columns: 1fr; gap: 32px; }
   .hero__actions .btn { width: 100%; }
 }
+
+/* ==========================================================================
+   LANDING PAGES (service + city)
+   Sub-pages under /services/ and /house-cleaning/ reuse the shared vocabulary
+   above; everything below is only what those pages add on top.
+   ========================================================================== */
+
+.h1-sub {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Service-area cards on the homepage now link through to city pages */
+.area h3 a { color: inherit; text-decoration: none; }
+.area h3 a:hover { color: var(--blue); text-decoration: underline; }
+
+.crumbs {
+  padding: 18px 0 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.crumbs li::after { content: "›"; margin-left: 6px; color: var(--line); }
+.crumbs li:last-child::after { content: ""; }
+.crumbs a { color: var(--blue); text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+
+/* Page hero — lighter than the homepage hero, single column */
+.phero { background: linear-gradient(180deg, var(--sky-soft) 0%, var(--cream) 100%); padding: 34px 0 64px; }
+.phero__inner { max-width: 780px; }
+.phero h1 { font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1.12; margin: 10px 0 0; }
+.phero__sub { margin: 18px 0 0; font-size: 1.06rem; line-height: 1.6; color: var(--muted); }
+.phero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+/* Long-form editorial content */
+.prose { max-width: 780px; }
+.prose h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); margin: 44px 0 14px; }
+.prose h2:first-child { margin-top: 0; }
+.prose h3 { font-size: 1.16rem; margin: 30px 0 10px; }
+.prose p { margin: 0 0 16px; line-height: 1.72; color: var(--ink); }
+.prose ul, .prose ol { margin: 0 0 20px; padding-left: 22px; line-height: 1.72; }
+.prose li { margin-bottom: 9px; }
+.prose a { color: var(--blue); }
+
+/* Checklist grid — "what's included" blocks */
+.checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin: 0 0 22px; padding: 0; list-style: none; }
+.checklist li { position: relative; padding-left: 26px; line-height: 1.55; margin-bottom: 4px; }
+.checklist li::before {
+  content: "";
+  position: absolute; left: 0; top: 6px;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--sky-soft);
+  box-shadow: inset 0 0 0 2px var(--blue);
+}
+
+/* Neighborhood chips on city pages */
+.hoods { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; padding: 0; list-style: none; }
+.hoods li {
+  padding: 7px 14px; border-radius: 999px;
+  background: var(--white); border: 1px solid var(--line);
+  font-size: 0.9rem; color: var(--ink);
+}
+
+/* Cross-links between landing pages */
+.related { background: var(--cream-2); }
+.related__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.related__card {
+  display: block; padding: 22px; border-radius: var(--radius);
+  background: var(--white); border: 1px solid var(--line);
+  text-decoration: none; color: var(--ink); transition: transform .15s ease, box-shadow .15s ease;
+}
+.related__card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.related__card strong { display: block; font-family: var(--font-head); font-size: 1.04rem; margin-bottom: 6px; }
+.related__card span { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+
+/* Closing call to action */
+.endcta { background: var(--navy); color: var(--white); text-align: center; }
+.endcta h2 { color: var(--white); }
+.endcta p { max-width: 560px; margin: 14px auto 26px; color: rgba(255,255,255,.82); line-height: 1.65; }
+.endcta__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+@media (max-width: 720px) {
+  .checklist { grid-template-columns: 1fr; }
+  .phero { padding: 22px 0 48px; }
+  .phero__actions .btn { width: 100%; }
+  .endcta__actions .btn { width: 100%; }
+}
